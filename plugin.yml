@@ -1,0 +1,7 @@
+name: WildPortal
+main: me.expertmm.WildPortal.main
+version: 1.0
+commands:
+  wildportal:
+    description: sends you to unclaim lands in the wild
+    usage: "Usage: /wildportal"
