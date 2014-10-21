@@ -19,6 +19,7 @@ Known Issues:
 -does not account for Towny town blocks or plots
 -Allows people to run WildPortal more than once (should only be allowed for op--or, allowed via permissions)
 	-May need to make list of worlds where WildPortal is denied, otherwise disable command unless op and only allow sign-clicking method
+-there is no check for an air block (so plugin does not account for situations where a block that is neither listed as habitable nor as bad will smother player)
 
 Bug table:
 
