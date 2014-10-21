@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="WINDOWS-1252" standalone="no"?>
+<jardesc>
+    <jar path="C:/Users/Owner/OneDrive/Projects-java/tekkitclassicserver-including-jar-to-reference/plugins/WildPortal.jar"/>
+    <options buildIfNeeded="true" compress="true" descriptionLocation="/WildPortal/src/main java, ClickListener java, csv LICENSE, plugin YML.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="true" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+    <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
+    <selectedProjects/>
+    <manifest generateManifest="true" manifestLocation="" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
+        <sealing sealJar="false">
+            <packagesToSeal/>
+            <packagesToUnSeal/>
+        </sealing>
+    </manifest>
+    <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
+        <javaElement handleIdentifier="=WildPortal/src&lt;me.expertmm.WildPortal"/>
+        <file path="/WildPortal/LICENSE"/>
+        <file path="/WildPortal/README.md"/>
+        <file path="/WildPortal/plugin.yml"/>
+        <file path="/WildPortal/TekkitClassic-Blocks.csv"/>
+    </selectedElements>
+</jardesc>

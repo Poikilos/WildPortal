@@ -1,0 +1,6 @@
+
+
+Bug table:
+
+Solved Date (otherwise blank),Solution,description,Identified Date
+2014-10-21,Fixed (sortof) by starting 4 blocks above ground (preventing fall damage), sometimes spawns on a dirt block that is two blocks below the surface,
