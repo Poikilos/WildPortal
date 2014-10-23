@@ -10,8 +10,10 @@ not been known to work yet (exclude ClickListener.java or it probably
 won't work) and only one sign is allowed, hard coded at (x,y,z)
 (-142,80,263).
 
+
 Known Issues:
 -Is linked against Tekkit.jar (tekkit's modded CB 1.2.5 jar)
+-AllowedPlayerList field in WildPortal.csv is not yet implemented
 -does not account for chunks that are not yet generated
 -does not account for data from WorldBorder plugin
 -does not account for data from Residence plugin
@@ -20,6 +22,9 @@ Known Issues:
 -Allows people to run WildPortal more than once (should only be allowed for op--or, allowed via permissions)
 	-May need to make list of worlds where WildPortal is denied, otherwise disable command unless op and only allow sign-clicking method
 -there is no check for an air block (so plugin does not account for situations where a block that is neither listed as habitable nor as bad will smother player)
+
+Troubleshooting:
+If you get any "No actual world" errors, you probably need to open your CSV file in notepad++ and replace all instances of your incorrect world name and set them to the actual name of the world you are using (this solution will work if the problem was caused by moving to a new world after already having entries in WildPortal.csv) in the SourceWorld and DestinationWorld columns.
 
 Bug table:
 

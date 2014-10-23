@@ -3,5 +3,46 @@ main: me.expertmm.WildPortal.main
 version: 1.0
 commands:
   wildportal:
-    description: sends you to unclaim lands in the wild
-    usage: "Usage: /wildportal"
+    description: Sends you to unclaimed lands in the wild
+    usage: "Usage: op can create WildPortal=/wildportal (then touch any sign), op can return to source after teleport=/wildportal return"
+
+WildPortalWorldsDefault:
+	description: These variables are the default for all new worlds not yet under WildPortalWorldsData
+	defaultReturnToSpawnX=0
+	defaultReturnToSpawnY=100
+	defaultReturnToSpawnZ=0
+	avoid0Description=Protected spawn area
+	avoid0StartX=-100
+	avoid0StartZ=-100
+	avoid0EndX=100
+	avoid0EndZ=100
+	minWildX=-1000
+	minWildZ=-1000
+	maxWildX=1000
+	maxWildZ=1000
+
+WildPortalWorldsData:
+	WorldLand:
+		description: This is Abiyahh's debug world.
+		defaultReturnToSpawnX=-143
+		defaultReturnToSpawnY=80
+		defaultReturnToSpawnZ=263
+		avoid0Description=Protected and enclosed spawn area
+		avoid0MinX=-148
+		avoid0MinZ=253
+		avoid0MaxX=-137
+		avoid0MaxZ=264
+		minWildX=-500
+		minWildZ=-300
+		maxWildX=0
+		maxWildZ=500
+	
+
+permissions:
+  WildPortalCreateWildPortal:
+    description: lets a player create WildPortal using /WildPortal then clicking sign
+    default: op
+  WildPortalReturn:
+    description: lets a player go back to the portal as long as the server has not restarted
+    default: op
+    
