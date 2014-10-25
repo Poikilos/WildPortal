@@ -1,0 +1,30 @@
+WildPortalWorldsData:
+  WorldLand:
+	description: This is Abiyahh's debug world.
+	defaultReturnToSpawnX: -143
+	defaultReturnToSpawnY: 80
+	defaultReturnToSpawnZ: 263
+	avoid0Description: Protected and enclosed spawn area
+	avoid0MinX: -148
+	avoid0MinZ: 253
+	avoid0MaxX: -137
+	avoid0MaxZ: 264
+	left: -500
+	top: -300
+	right: 0
+	bottom: 500
+
+WildPortalWorldsDefault:
+  description: These variables are the default for all new worlds not yet under WildPortalWorldsData
+  defaultReturnToSpawnX: 0
+  defaultReturnToSpawnY: 100
+  defaultReturnToSpawnZ: 0
+  avoid0Description: Protected spawn area
+  avoid0StartX: -100
+  avoid0StartZ: -100
+  avoid0EndX: 100
+  avoid0EndZ: 100
+  left: -1000
+  top: -1000
+  right: 1000
+  bottom: 1000
