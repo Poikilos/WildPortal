@@ -82,7 +82,7 @@ public class MultiEventHandler implements CommandExecutor, Listener {
 	public List<String> aboutToMakeTeleporterWithNextClickPlayerList = null;
 	public List<String> aboutToBreakTeleporterWithNextClickPlayerList = null;
 	private List<WildPortalPortal> wildportalList = null; //static List<Location> authorizedSignLocationList = null;
-	private List<WildPortalPlayerData> wildportalPlayerList = null;
+	private List<WildPortalPlayerData> wildportalplayerdataList = null;
 	private static String AuthorDebugWorldBeingUsedByPlayerName="Abiyahh";
 	//public static String AuthorDebugWorld="WorldLand";
 	private static String csvFileFullName = null;
@@ -193,15 +193,15 @@ public class MultiEventHandler implements CommandExecutor, Listener {
     }
 	
 	public boolean IsPlayerListLoaded() {
-		return wildportalPlayerList!=null;
+		return wildportalplayerdataList!=null;
 	}
 	private void doLoadPlayerList() {
-		if (wildportalPlayerList==null) wildportalPlayerList = new ArrayList<WildPortalPlayerData>();
+		if (wildportalplayerdataList==null) wildportalplayerdataList = new ArrayList<WildPortalPlayerData>();
 	}
 	public Location getReturnLocationForPlayerElseNull(String find_playerName, boolean IsToBeRemoved) {
 		Location returnLocation=null;
 		if (!IsPlayerListLoaded()) doLoadPlayerList();
-		for (ListIterator<WildPortalPlayerData> iter = wildportalPlayerList.listIterator(); iter.hasNext(); ) {
+		for (ListIterator<WildPortalPlayerData> iter = wildportalplayerdataList.listIterator(); iter.hasNext(); ) {
 			WildPortalPlayerData element = iter.next();
 		    // 1 - can call methods of element
 		    // 2 - can use iter.remove() to remove the current element from the list
@@ -762,14 +762,18 @@ public class MultiEventHandler implements CommandExecutor, Listener {
 				checkedLocation.setY(checkedLocation.getY()+(double)StartAboveGroundByInt);
 				boolean IsToBeRemoved=true;
 				Location deleteOldReturnLocation=getReturnLocationForPlayerElseNull(player.getName(),IsToBeRemoved);
-				wildportalPlayerList.add(new WildPortalPlayerData(player.getName(),player.getLocation()));
+				wildportalplayerdataList.add(new WildPortalPlayerData(player.getName(),player.getLocation()));
 				if (thisServer!=null) thisServer.broadcastMessage(player.getName() + " is being born in "+destWorld.getName()+"..."); //TODO: send to all players
-				player.setNoDamageTicks(60);
+				int NoDamageSeconds=20;
+				int TicksPerSecond=20;
+				int NoDamageTicks=NoDamageSeconds*TicksPerSecond;
+				if (player.getMaximumNoDamageTicks()<NoDamageTicks) player.setMaximumNoDamageTicks(NoDamageTicks);
+				player.setNoDamageTicks(NoDamageTicks);//tick is 1/20th of a second (50ms)
 				player.teleport(checkedLocation);
+				IsTeleported=true;
 				//Bukkit.broadcast(player.getName() + " has arrived.");
 				if (thisServer!=null) thisServer.broadcastMessage((player.getName() + " has arrived."));
 				main.logWriteLine("WildPortal destination in range ("+thisWildPortal.toString_DestRectOnly_AsRangePair()+") for "+player.getName()+" was: "+checkedLocation.toString());
-				IsTeleported=true;
 				break;
 			}
 			TryCount++;
