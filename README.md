@@ -12,21 +12,21 @@ Use the portal by clicking the sign (allow list not yet implemented, so everyone
 /wildportal verbose [true|false] (set the level of debug output to the server console--if neither true nor false are provided, the value will be toggled [if wildportal.return permission])  
 
 ##Release Notes:
-###2014-10-25
+2014-10-25  
 * [resolved: Set player as invulnerable for 20 seconds (20*20 ticks) after teleport.] Not invulnerable as long as expected after teleported
 * Added LastCreated WildPortal variables to config, so that return can be used (by someone with manage) even if did not click a sign (last used sign is not saved, only last created sign)
 * Added /wildportal verbose (to toggle additional server console logging)
 * Finished load and save of WildPortal.csv (along with that, finished implementing RTable and fixed its bugs).
 * [resolved: new MultiEventHandler() should be called once] new MultiEventHandler() should be called twice (for setExecutor then registerEvents)
 * operating on portal may fail due to finding it in database table by checking double location instead of int location in wildportalListRemoveByLocation and wildportalListContainsLocation
-* implement "<this>" keyword
-###2014-10-24
+* implement "<this>" keyword  
+2014-10-24  
 * Spawn even higher in air to avoid trees and allow chunks more time to load (invincible for 60 seconds)
 * implement permissions
 * Basic features are implemented (except setting destination range)
 * You can create infinite wildportals, but they won't yet be saved on server shutdown.
-* check for an air block (account for situations where a block that is neither listed as habitable nor as bad will smother player)
-###2014-10-21
+* check for an air block (account for situations where a block that is neither listed as habitable nor as bad will smother player)  
+2014-10-21  
 * implemented spawning high enough above ground to avoid problems like chunk still loading
 
 ##ToDo:  
