@@ -32,6 +32,7 @@ Use the portal by clicking the sign (allow list not yet implemented, so everyone
 * implemented spawning high enough above ground to avoid problems like chunk still loading
 
 ##ToDo:  
+* reload subcommand - reload WildPortal.csv and config.yml
 * make sure not spawning in leaves farther above ground than "spawn above ground" value
 * make sure spawn above ground is not higher than 255
 * make sure grass at 255 or 254 is not used as habitable (avoid smothering)
