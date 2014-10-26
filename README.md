@@ -9,7 +9,7 @@ GOAL: Teleport to the random place in wild, avoiding towny claims, caves, reside
 /wildportal remove (remove WildPortal from sign [if wildportal.manage permission])  
 Use the portal by clicking the sign (allow list not yet implemented, so everyone can use it)  
 /wildportal return (return to the block last used as a portal [if wildportal.return permission])  
-/wildportal verbose [true|false] (set the level of debug output to the server console--if neither true nor false are provided, the value will be toggled [if wildportal.return permission])  
+/wildportal verbose `[true|false]` (set the level of debug output to the server console--if neither true nor false are provided, the value will be toggled [if wildportal.return permission])  
 
 ##Release Notes:
 2014-10-25  
