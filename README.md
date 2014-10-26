@@ -20,12 +20,14 @@ Use the portal by clicking the sign (allow list not yet implemented, so everyone
 * [resolved: new MultiEventHandler() should be called once] new MultiEventHandler() should be called twice (for setExecutor then registerEvents)
 * operating on portal may fail due to finding it in database table by checking double location instead of int location in wildportalListRemoveByLocation and wildportalListContainsLocation
 * implement "<this>" keyword  
+
 2014-10-24  
 * Spawn even higher in air to avoid trees and allow chunks more time to load (invincible for 60 seconds)
 * implement permissions
 * Basic features are implemented (except setting destination range)
 * You can create infinite wildportals, but they won't yet be saved on server shutdown.
 * check for an air block (account for situations where a block that is neither listed as habitable nor as bad will smother player)  
+
 2014-10-21  
 * implemented spawning high enough above ground to avoid problems like chunk still loading
 
@@ -46,4 +48,4 @@ Use the portal by clicking the sign (allow list not yet implemented, so everyone
 * Test world to world teleport
 
 ##Troubleshooting:  
-If you get any "No actual world" errors, you probably need to open your CSV file in notepad++ and replace all instances of your incorrect world name and set them to the actual name of the world you are using (this solution will work if the problem was caused by moving to a new world after already having entries in WildPortal.csv) in the SourceWorld and DestinationWorld columns.
+If teleporter does not work or you get any "no world named" errors, you probably need to open your CSV file in notepad++ and replace all instances of your incorrect world name and set them to the actual name of the world you are using (this solution will work if the problem was caused by moving to a new world after already having entries in WildPortal.csv) in the SourceWorld and DestinationWorld columns.
