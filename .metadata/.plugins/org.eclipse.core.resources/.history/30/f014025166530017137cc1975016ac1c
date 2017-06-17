@@ -1,0 +1,75 @@
+/**
+ * 
+ */
+package me.expertmm.WildPortal;
+
+/**
+ * @author Jacob Gustafson
+ *
+ */
+public class GroundRect {
+	public String dimensionString=null;
+	public int x=0;
+	public int z=0;
+	public int width=1;
+	public int height=1;
+	
+	public GroundRect(int set_X, int set_Y, int set_Width, int set_Height) {
+		this.x=set_X;
+		this.z=set_Y;
+		this.width=set_Width;
+		this.height=set_Height;
+	}	
+	public int getLeft() {
+		return this.x;
+	}
+	public int getTop() {
+		return this.z;
+	}
+	public int getRight() {
+		return this.x+this.width;
+	}
+	public int getRightInclusive() {
+		return (this.width>0)?this.x+this.width-1:this.x; //for example if width is 1, return X
+	}
+	public int getBottom() {
+		return this.z+this.height;
+	}
+	public int getBottomInclusive() {
+		return (this.height>0)?this.z+this.height-1:this.z; //for example if height is 1, return X
+	}
+	public void SetInclusive(int set_Left, int set_Top, int set_Right, int set_Bottom) {
+		setRightInclusive(set_Left,set_Right);
+		setBottomInclusive(set_Top,set_Bottom);
+	}
+	public void setRight(int set_Left, int set_Right) {
+		this.x=set_Left;
+		this.width=set_Right-set_Left;
+	}
+	public void setRightInclusive(int set_Left, int set_Right) {
+		this.x=set_Left;
+		this.width=set_Right-set_Left+1;
+	}
+	public void setBottom(int set_Top, int set_Bottom) {
+		this.z=set_Top;
+		this.width=set_Bottom-set_Top;
+	}
+	public void setBottomInclusive(int set_Top, int set_Bottom) {
+		this.z=set_Top;
+		this.width=set_Bottom-set_Top+1;
+	}
+	public String toString() {
+		return "{"+((dimensionString!=null)?("world:"+dimensionString+"; "):"")+"x:" + String.valueOf(x) + ", z:" + String.valueOf(z) +
+				", width:" + String.valueOf(width) + ", height:" + String.valueOf(height) + "}";
+	}
+	public String toStringXYWidthHeight(String delimiter) {
+		if (delimiter==null) {
+			delimiter=",";
+			main.logWriteLine("WARNING: Delimiter was null in toStringXYWidthHeight, so used '"+delimiter+"' instead.");
+		}
+		return String.valueOf(x)
+				+delimiter+String.valueOf(z)
+				+delimiter+String.valueOf(width)
+				+delimiter+String.valueOf(height);
+	}
+}

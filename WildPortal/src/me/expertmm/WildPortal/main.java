@@ -22,11 +22,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 //or just:
 import org.bukkit.Bukkit;
-import org.bukkit.Server;
+//import org.bukkit.Server;
 import org.bukkit.event.Listener;
-import org.bukkit.plugin.Plugin;
+//import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.configuration.file.FileConfiguration;
+//import org.bukkit.configuration.file.FileConfiguration;
+
 
 import java.util.logging.Logger;
 //import java.util.List;
@@ -41,6 +42,8 @@ public class main extends JavaPlugin {
 	private static MultiEventHandler meh = null;
 	//private Server thisServer = null;
 	//private FileConfiguration config = null;
+	
+
 	
 	public static void logWriteLine(String msg) {
 		if (thisLogger!=null) thisLogger.info(msg);

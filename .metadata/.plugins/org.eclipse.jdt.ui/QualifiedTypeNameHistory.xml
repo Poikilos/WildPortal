@@ -2,12 +2,9 @@
 <qualifiedTypeNameHistroy>
 <fullyQualifiedTypeName name="org.bukkit.command.CommandSender"/>
 <fullyQualifiedTypeName name="org.bukkit.entity.Player"/>
-<fullyQualifiedTypeName name="org.bukkit.ChatColor"/>
 <fullyQualifiedTypeName name="org.bukkit.plugin.PluginManager"/>
 <fullyQualifiedTypeName name="org.bukkit.plugin.Plugin"/>
 <fullyQualifiedTypeName name="org.bukkit.command.Command"/>
-<fullyQualifiedTypeName name="org.bukkit.Location"/>
-<fullyQualifiedTypeName name="org.bukkit.World"/>
 <fullyQualifiedTypeName name="org.bukkit.Bukkit"/>
 <fullyQualifiedTypeName name="org.bukkit.plugin.java.JavaPlugin"/>
 <fullyQualifiedTypeName name="org.bukkit.plugin.PluginLogger"/>
@@ -24,4 +21,29 @@
 <fullyQualifiedTypeName name="java.io.File"/>
 <fullyQualifiedTypeName name="java.io.FileWriter"/>
 <fullyQualifiedTypeName name="java.awt.Rectangle"/>
+<fullyQualifiedTypeName name="org.bukkit.Material"/>
+<fullyQualifiedTypeName name="org.bukkit.ChatColor"/>
+<fullyQualifiedTypeName name="me.expertmm.WildPortal.WildPortalData"/>
+<fullyQualifiedTypeName name="java.nio.file.Path"/>
+<fullyQualifiedTypeName name="java.nio.file.Paths"/>
+<fullyQualifiedTypeName name="com.google.common.util.concurrent.ExecutionError"/>
+<fullyQualifiedTypeName name="java.lang.Exception"/>
+<fullyQualifiedTypeName name="java.util.Set"/>
+<fullyQualifiedTypeName name="java.util.ListIterator"/>
+<fullyQualifiedTypeName name="java.util.Iterator"/>
+<fullyQualifiedTypeName name="org.omg.CORBA.PUBLIC_MEMBER"/>
+<fullyQualifiedTypeName name="javax.print.attribute.standard.Destination"/>
+<fullyQualifiedTypeName name="org.bukkit.event.world.PortalCreateEvent"/>
+<fullyQualifiedTypeName name="com.google.common.base.Strings"/>
+<fullyQualifiedTypeName name="org.bukkit.World"/>
+<fullyQualifiedTypeName name="org.bukkit.configuration.ConfigurationSection"/>
+<fullyQualifiedTypeName name="me.expertmm.WildPortal.IRect"/>
+<fullyQualifiedTypeName name="java.util.Arrays"/>
+<fullyQualifiedTypeName name="java.util.List"/>
+<fullyQualifiedTypeName name="org.bukkit.Location"/>
+<fullyQualifiedTypeName name="java.lang.Integer"/>
+<fullyQualifiedTypeName name="me.expertmm.WildPortal.GroundRect"/>
+<fullyQualifiedTypeName name="me.expertmm.WildPortal.WildPortalPortal"/>
+<fullyQualifiedTypeName name="java.lang.String"/>
+<fullyQualifiedTypeName name="java.lang.Boolean"/>
 </qualifiedTypeNameHistroy>

@@ -1,6 +1,6 @@
 name: WildPortal
 main: me.expertmm.WildPortal.main
-version: 1.0
+version: 1.5.2.3
 commands:
   wildportal:
     description: Sends you to unclaimed lands in the wild

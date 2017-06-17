@@ -1,0 +1,349 @@
+/**
+ * @author Jacob Gustafson
+ *
+ */
+package me.expertmm.WildPortal;
+
+//import java.awt.Rectangle;
+//import java.util.List;
+//import java.util.ListIterator;
+
+
+
+
+
+//import javax.print.attribute.standard.Destination;
+
+//import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Server;
+import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
+//import org.omg.CORBA.PUBLIC_MEMBER;
+
+
+import com.google.common.base.Strings;
+
+public class WildPortalPortal {
+	
+	//LOCAL:
+	private int X=-143;
+	private int Y=80;
+	private int Z=263;
+	public String sourceWorldName="world";
+	private String destinationWorldName="<this>";
+	public String destinationKeyword="<wild>";
+	public String allowedPlayerList="<Everyone>";
+	private GroundRect destRect = null;
+	
+	public static String getIDFromLocation(Location location) {
+		//NOTE: This is not a universally unique ID, even as applies to server.
+		//      It is saved under world name to make it unique.
+		return "x" + Integer.toString(location.getBlockX()).replace('-', '_') + 
+		       "y" + Integer.toString(location.getBlockX()).replace('-', '_') +
+		       "z" + Integer.toString(location.getBlockZ()).replace('-', '_');
+	}
+	public static void setLocationByID(Location location, String wpid) {
+		int x_i=-1;
+		int y_i=-1;
+		int z_i=-1;
+		if (!Strings.isNullOrEmpty(wpid)) {
+			x_i = wpid.indexOf("x");
+			y_i = wpid.indexOf("y");
+			z_i = wpid.indexOf("z");
+		}
+		if (x_i>=0 && y_i>x_i && z_i>y_i) {
+			location.setX((double)Integer.parseInt(wpid.substring(x_i+1, y_i).replace('_', '-')));
+			location.setY((double)Integer.parseInt(wpid.substring(y_i+1, z_i).replace('_', '-')));
+			location.setZ((double)Integer.parseInt(wpid.substring(z_i+1).replace('_', '-')));
+		}
+		else {
+			if (wpid!=null) main.logWriteLine("ERROR: setLocationByID could not parse '" + wpid + "'");
+			else main.logWriteLine("ERROR: setLocationByID could not parse null id");
+		}
+	}
+	public static Location getLocationFromID(World world,
+			String wpid) {
+		Location location=null;
+		int x_i=-1;
+		int y_i=-1;
+		int z_i=-1;
+		if (!Strings.isNullOrEmpty(wpid)) {
+			x_i = wpid.indexOf("x");
+			y_i = wpid.indexOf("y");
+			z_i = wpid.indexOf("z");
+		}
+		if (x_i>=0 && y_i>x_i && z_i>y_i) {
+			double x=(double)Integer.parseInt(wpid.substring(x_i+1, y_i).replace('_', '-'));
+			double y=(double)Integer.parseInt(wpid.substring(y_i+1, z_i).replace('_', '-'));
+			double z=(double)Integer.parseInt(wpid.substring(z_i+1).replace('_', '-'));
+			location=new Location(world, x,y,z);
+		}
+		else {
+			if (wpid!=null) main.logWriteLine("ERROR: setLocationByID could not parse '" + wpid + "'");
+			else main.logWriteLine("ERROR: setLocationByID could not parse null id");
+		}
+		return location;
+	}	
+    public String getLocationCoords() {
+		return String.valueOf(this.X)+","+String.valueOf(this.Y)+","+String.valueOf(this.Z);
+	}
+	public boolean equalsWildPortalSource(WildPortalPortal check_wildPortalPortal) {
+		return (check_wildPortalPortal.getBlockX()==X) && (check_wildPortalPortal.getBlockY()==Y) && (check_wildPortalPortal.getBlockZ()==Z) && (check_wildPortalPortal.sourceWorldName.equalsIgnoreCase(sourceWorldName));
+	}
+	public boolean equalsBlockLocation(int check_X, int check_Y, int check_Z, String check_sourceWorldName) {
+		return (check_X==X) && (check_Y==Y) && (check_Z==Z) && (check_sourceWorldName.equalsIgnoreCase(sourceWorldName));
+	}
+	public int getBlockX() {
+		return X;
+	}
+	public int getBlockY() {
+		return Y;
+	}
+	public int getBlockZ() {
+		return Z;
+	}
+	public WildPortalPortal(int setX, int setY, int setZ, String set_sourceWorldName, String set_destinationWorldName, String set_destinationKeyword, int set_X, int set_Y, int set_Width, int set_Height) {
+		this.Set(setX, setY, setZ, set_sourceWorldName, set_destinationWorldName, set_destinationKeyword,set_X,set_Y,set_Width,set_Height);
+	}
+	public String getDestinationWorldName() {
+		return this.destinationWorldName;
+	}
+	
+	public World getDestinationWorld(Server server, World playerCurrentWorld) {
+		//Location returnLocation=null;
+		World returnWorld=null;
+		if (server!=null) {
+			if (playerCurrentWorld!=null) {
+				//World world=null;
+				if (destinationWorldName.equalsIgnoreCase("<this>")) returnWorld=playerCurrentWorld;
+				else returnWorld=server.getWorld(destinationWorldName);
+				if (returnWorld!=null) {
+					//returnLocation = new Location(world, this.X, this.Y, this.Z);
+				}
+				else {
+					main.logWriteLine("ERROR: WildPortal getDestinationWorld failed to find a world matching the portal's destination world named \""+this.destinationWorldName+"\")");
+				}
+			}
+			else {
+				main.logWriteLine("ERROR: WildPortal needs non-null playerCurrentWorld object to get world object by name (in case value of destinationWorldName field is <this> instead of a world name).");
+			}
+		}
+		else {
+			main.logWriteLine("ERROR: WildPortal needs non-null server object to get world object by name.");
+		}
+		return returnWorld;//return returnLocation;
+	}
+	public void SetDestAsWild(String set_destinationWorldName, int set_X, int set_Z) {
+		this.destinationWorldName=set_destinationWorldName;
+		this.destRect=new GroundRect(set_X-this.destRect.width/2, set_Z-this.destRect.height/2, this.destRect.width, this.destRect.height);
+		this.destinationKeyword="<wild>";
+	}
+	public void Set(int set_X, int set_Y, int set_Z, String set_sourceWorldName, String set_destinationWorldName, String set_destinationKeyword, int dest_X, int dest_Y, int dest_Width, int dest_Height) {
+		this.X=set_X;
+		this.Y=set_Y;
+		this.Z=set_Z;
+		this.sourceWorldName=set_sourceWorldName;
+		this.destinationWorldName=set_destinationWorldName;
+		this.destinationKeyword=set_destinationKeyword;
+		this.destRect=new GroundRect(dest_X,dest_Y,dest_Width,dest_Height);
+	}
+	//public WildPortalPortal(Location set_blockLocation, String set_destinationWorldName, String set_destinationKeyword) {
+	//	this.Set(set_blockLocation, set_destinationWorldName, set_destinationKeyword);
+	//}
+	//public void Set(Location set_blockLocation, String set_destinationWorldName, String set_destinationKeyword) {
+	//	this.X=(int)set_blockLocation.getX();
+	//	this.Y=(int)set_blockLocation.getY();
+	//	this.Z=(int)set_blockLocation.getZ();
+	//	this.sourceWorldName=set_blockLocation.getWorld().getName();
+	//	this.destinationWorldName=set_destinationWorld;
+	//	this.destinationKeyword=set_destinationKeyword;
+	//}
+	
+	public boolean IsLikeSource(Location location) {
+		return ( (location.getBlockX()==this.X)
+				&& (location.getBlockY()==this.Y)
+				&& (location.getBlockZ()==this.Z) 
+				&& ( this.sourceWorldName.equalsIgnoreCase(location.getWorld().getName()) )
+				);
+	}
+	public Location getSourceLocation(Server server) {
+		Location thisLocation=null;
+		if (server!=null) {
+			World world=null;
+			world=server.getWorld(destinationWorldName);
+			if (world!=null) {
+				thisLocation = new Location(world, this.X, this.Y, this.Z);
+			}
+			else {
+				main.logWriteLine("ERROR: WildPortal getLocation failed to find a world matching the portal's destination named \""+this.destinationWorldName+"\")");
+			}
+		}
+		return thisLocation;
+	}
+	public String toString_SignPointOnly() {
+		String result=Integer.toString(this.X)+","+Integer.toString(this.Y)+","+Integer.toString(this.Z);
+		return result;
+	}
+	public String toString_Destination() {
+		return destinationKeyword+" in "+destinationWorldName+" within "+toString_DestRectOnly_AsRangePair();
+	}
+	public String toString_Destination_center() {
+		return destinationKeyword+" in "+destinationWorldName+" around " + 
+		       Integer.toString(this.destRect.x+this.destRect.width/2) + "," +
+		       Integer.toString(this.destRect.z+this.destRect.height/2);
+	}
+	public String toString_DestRectOnly_AsRangePair() {
+		String returnString = "";
+		if (this.destRect!=null) {
+			returnString=this.destRect.getLeft()+" to "+this.destRect.getRightInclusive()
+					+","+this.destRect.getTop()+" to "+this.destRect.getBottomInclusive();
+		}
+		return returnString;
+	}
+	public static WildPortalPortal getFromConfigurationSection(ConfigurationSection cs, String SayErrorWasInWhatSourceFileName) {
+		WildPortalPortal result = null;
+		Boolean HasAll=true;
+		int sourceX=Integer.MIN_VALUE;
+		int sourceY=Integer.MIN_VALUE;
+		int sourceZ=Integer.MIN_VALUE;
+		String sourceWorldName=null;
+		int destX=Integer.MIN_VALUE;
+		int destY=Integer.MIN_VALUE;
+		int destWidth=Integer.MIN_VALUE;
+		int destHeight=Integer.MIN_VALUE;
+		if (!cs.contains("source.X")) HasAll=false;
+		else sourceX=cs.getInt("source.X");
+		if (!cs.contains("source.Y")) HasAll=false;
+		else sourceY=cs.getInt("source.Y");
+		if (!cs.contains("source.Z")) HasAll=false;
+		else sourceZ=cs.getInt("source.Z");
+		if (!cs.contains("source.world")) HasAll=false;
+		else sourceWorldName=cs.getString("source.world");
+		if (!cs.contains("destination.X")) HasAll=false;
+		else destX=cs.getInt("destination.X");
+		if (!cs.contains("destination.Z")) HasAll=false;
+		else destY=cs.getInt("destination.Z");
+		if (!cs.contains("destination.Width")) HasAll=false;
+		else destWidth=cs.getInt("destination.Width");
+		if (!cs.contains("destination.Height")) HasAll=false;
+		else destHeight=cs.getInt("destination.Height");
+		if (HasAll) {
+			if (!cs.contains("destination.world")) {
+				String destinationWorldName=cs.getString("destination.world");
+				String destinationKeyword=null;
+				if (cs.contains("destination.keyword")) destinationKeyword=cs.getString("destination.keyword");
+				else HasAll=false;
+				result = new WildPortalPortal(sourceX,sourceY,sourceZ,sourceWorldName, destinationWorldName, destinationKeyword, destX, destY, destWidth, destHeight);
+			}
+			else {
+				HasAll=false;
+				main.logWriteLine(" was read missing in "+SayErrorWasInWhatSourceFileName);
+			}
+		}
+		else {
+			main.logWriteLine("ERROR: Incomplete source or destination in "+SayErrorWasInWhatSourceFileName);
+		}		
+		return result;
+	}
+	public String toCSVLine() {
+		String returnString=null;
+		//fieldDelimiter textDelimiter
+		boolean HasAll=true;
+		String tempString="";
+		String participle="before initializing";
+		try {
+			if (HasAll) {
+				participle="initializing line with sourceX";
+				//String sourceXString=String.valueOf(X);
+				tempString=RTable.LiteralFieldToCSVField(String.valueOf(X));
+				if (tempString==null) {
+					main.logWriteLine("ERROR in WildPortalPortal toCSVLine: LiteralFieldToCSVField returned null");
+					HasAll=false;
+				}
+			}
+			else HasAll=false;
+			if (HasAll) {
+				participle="appending sourceY";
+				tempString+=","+RTable.LiteralFieldToCSVField(String.valueOf(Y));
+			}
+			else HasAll=false;
+			if (HasAll) {
+				participle="appending sourceZ";
+				tempString+=","+RTable.LiteralFieldToCSVField(String.valueOf(Z));
+			}
+			else HasAll=false;
+			if (HasAll&&sourceWorldName!=null) {
+				participle="appending sourceWorldName";
+				tempString+=","+RTable.LiteralFieldToCSVField(String.valueOf(sourceWorldName));
+			}
+			else {
+				main.logWriteLine("ERROR in WildPortalPortal toCSVLine: sourceWorldName was null!");
+				HasAll=false;
+			}
+			if (HasAll&&destinationWorldName!=null) {
+				participle="appending destinationWorldName";
+				tempString+=","+RTable.LiteralFieldToCSVField(String.valueOf(destinationWorldName));
+			}
+			else {
+				main.logWriteLine("ERROR in WildPortalPortal toCSVLine: destinationWorldName was null!");
+				HasAll=false;
+			}
+			if (HasAll&&destinationKeyword!=null) {
+				participle="appending destinationKeyword";
+				tempString+=","+RTable.LiteralFieldToCSVField(String.valueOf(destinationKeyword));
+			}
+			else {
+				main.logWriteLine("ERROR in WildPortalPortal toCSVLine: destinationKeyword was null!");
+				HasAll=false;
+			}
+			if (HasAll&&allowedPlayerList!=null) {
+				participle="appending allowedPlayerList";
+				tempString+=","+RTable.LiteralFieldToCSVField(String.valueOf(allowedPlayerList));
+			}
+			else {
+				main.logWriteLine("ERROR in WildPortalPortal toCSVLine: allowedPlayerList was null!");
+				HasAll=false;
+			}
+			participle="before checking destRect";
+			if (HasAll&&destRect!=null) {
+				participle="converting destRect to string";
+				String destRectString=destRect.toString(",");
+				if (HasAll&&destRectString!=null) {
+					participle="appending destRect string";
+					tempString+=","+destRectString;
+					returnString=tempString;
+				}
+				else {
+					main.logWriteLine("ERROR in WildPortalPortal toCSVLine: destRect returned a null string!");
+					HasAll=false;
+				}
+			}
+			else {
+				main.logWriteLine("ERROR in WildPortalPortal toCSVLine: destRect was null!");
+				HasAll=false;
+			}			
+		}
+		catch (Exception e) {
+			returnString=null;
+			main.logWriteLine("Could not finish "+participle+" in WildPortalPortal toCSVLine:"+e.toString());
+		}
+		return returnString;
+	}
+	public int getDestXMin() {
+		return (this.destRect!=null)?this.destRect.getLeft():0;
+	}
+	public int getDestZMin() {
+		// TODO Auto-generated method stub
+		return (this.destRect!=null)?this.destRect.getTop():0;
+	}
+	public int getDestXMax() {
+		// TODO Auto-generated method stub
+		return (this.destRect!=null)?this.destRect.getRightInclusive():0;
+	}
+	public int getDestZMax() {
+		// TODO Auto-generated method stub
+		return (this.destRect!=null)?this.destRect.getBottomInclusive():0;
+	}
+
+}
