@@ -1,0 +1,70 @@
+package me.expertmm.WildPortal;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
+
+//for handling events other than commands, you need a listener (other class)
+public class main extends JavaPlugin { 
+	public void onEnable (){
+		getLogger().info("WildPortal Enabled!");
+	}
+	
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+		PluginManager plg = Bukkit.getPluginManager(); //Assigns plg to Bukkit.getPluginManager()
+		Plugin plgname = plg.getPlugin("WildPortal");
+		Player player = ((Player) sender);
+		World world = player.getWorld();
+		if (cmd.getName().equalsIgnoreCase("wildportal")) { // If the player typed /wildportal then do the following...
+			if(args.length==0){sender.sendMessage(ChatColor.AQUA + "For help, use /wildportal help");}
+			if (sender instanceof Player){
+				Location sourceLocation = player.getLocation();
+				sender.sendMessage(sender.getName() + " is being born");
+				player.setNoDamageTicks(60);
+				//Location destLocation = new Location(world, 0,68,0);
+				//Location destLocation = new Location(world, sourceLocation.getX(), sourceLocation.getY()+20.0, sourceLocation.getZ() );
+				Location tryLocation = new Location(world, -255,64,173);
+				double minY=49.0;
+				Location destLocation = getLocationOnGround(world, tryLocation, minY);
+				if (destLocation.getY()>=minY) {
+					player.teleport(destLocation);
+				}
+				else {
+					sender.sendMessage("WildPortal: Uh oh, portal couldn't find a suitable location for you yet. Please try again.");
+				}
+			}
+			else {
+				sender.sendMessage("WildPortal: I think the SYSTEM is talking to me.");
+			}
+		}
+		return true;
+	}
+	
+	public void onDisable() {
+		getLogger().info("WildPortal Disabled");
+	}
+	
+	private Location getLocationOnGround(World world, Location tryLocation, double minY) {
+		//tryLocation.setY(255);
+		int tryX=(int)tryLocation.getX();
+		int tryY=255;
+		int tryZ=(int)tryLocation.getZ();
+		while (tryLocation.getY()>=minY) {
+			int thisBlockTypeID=world.getBlockTypeIdAt(tryX,tryY,tryZ);
+			if (thisBlockTypeID=) {
+				break;
+			}
+			tryY-=1.0;
+		}
+		if (tryY<minY) tryLocation.setY(0.0);//0.0 is a FLAG that there is no ground here
+		else tryLocation.setY(tryY);
+		return tryLocation;
+	}
+}
