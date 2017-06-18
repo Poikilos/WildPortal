@@ -36,7 +36,7 @@ Place in your enclosed, protected spawn then place a WildPortal in it!
 	    * Check everything (except perhaps "Word Proposals") in first list ("Select the proposal kinds contained in the 'default' content assist list:")
 
 ## Changes:
-### Changes up to 1.5.2.3 are below
+### Changes up to 1.5.2.2 are below
 * (2017-06-17) changed version in plugin.yml to 1.5.2.3
 * (2017-06-17) added command wildportal save : save portals.yml and players.yml
 * (2017-06-17) added command wildportal reload : reload portals.yml and players.yml

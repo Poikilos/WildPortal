@@ -1,6 +1,6 @@
 name: WildPortal
 main: me.expertmm.WildPortal.main
-version: 1.5.2.3
+version: 1.5.2.2
 commands:
   wildportal:
     description: Sends you to inhabitable land in the wild
