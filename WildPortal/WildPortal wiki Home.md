@@ -1,4 +1,5 @@
 ![WildPortal](http://expertmultimedia.com/downloads/images/wildportal-logo-square-small-padded-3xW.png)
+
 **This file is an incomplete overview. Please see README.md in main repository folder for full and up-to-date details.**
 ## Description  
 WildPortal lets you create signs on your server that, when clicked, teleport people to a safe block where they will not be smothered, anywhere in the world within a given range.  
