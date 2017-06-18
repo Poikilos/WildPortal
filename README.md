@@ -1,12 +1,26 @@
+<p align="center">
+  <img src="https://github.com/expertmm/WildPortal/raw/master/wildportal-logo-square-small.png"/>
+</p>
 # WildPortal
-Mark a sign as a "WildPortal" to a random place in wild.
-Place in your enclosed, protected spawn then place a WildPortal in it!
+WildPortal lets you create signs on your server that, when clicked, randomly teleport players to their own personal safe block in the wild.
 
 ## Unique features:
 * Mark any vanilla sign as a WildPortal, and sign can say anything
 * Avoids blocks which would make the immediate area uninhabitable (avoids water, lava, etc).
 * Avoids unnatural blocks such as cobble, wood planks, and bricks
 * Data is saved whenever changes are made
+* If player has spawn permission and go back to spawn and click the sign again, they will be sent to the SAME personal spawn point that WildPortal generated (only in *.*.*.2+ versions).
+
+## Currently has binaries for:
+* Hexxit via MCPC+
+* Tekkit Classic via CraftBukkit for 1.2.5 (version *.*.*.1 only--current code uses Materials enum for blocks and may not work with Tekkit Classic)
+
+## Recommended use:
+* give players spawn or wildportal.return permission by default
+* Enclose the wildportal sign in a protected building (with no exit other than WildPortal) around spawn, via WorldGuard, Residence, or other protection method (disabling PvP in that region is also suggested)
+
+## History:
+Why another "wild" teleporter? There is a lack of compatible wild teleporters that work on Tekkit Classic Server. One was written in Skript, but I couldn't get Skript to work properly on Tekkit Classic server. Potentially many "wild" teleporter plugins could be recompiled against Tekkit.jar and work, however people often release the plugin as closed-source and do not do that. 
 
 ## Usage:  
 ### Admin HowTos
