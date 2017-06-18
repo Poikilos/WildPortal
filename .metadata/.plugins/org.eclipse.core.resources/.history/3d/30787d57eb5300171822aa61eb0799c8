@@ -1,0 +1,16 @@
+name: WildPortal
+main: me.expertmm.WildPortal.main
+version: 1.5.2.3
+commands:
+  wildportal:
+    description: Sends you to unused land in the wild
+    usage: "Usage: /wildportal return : return to source; /wildportal help : view management commands if you have permission to them"
+
+permissions:
+  wildportal.manage:
+    description: lets a player create WildPortal using /WildPortal then clicking sign, and other commands.
+    default: op
+  wildportal.return:
+    description: lets a player go back to the portal as long as the server has not restarted
+    default: op
+    

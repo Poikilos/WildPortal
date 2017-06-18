@@ -40,6 +40,7 @@ public class main extends JavaPlugin {
 	private static main plugin=null;//private static Plugin plugin=null;
 	private static Logger thisLogger = null;
 	private static MultiEventHandler meh = null;
+	public static String myVersionString = null;
 	//private Server thisServer = null;
 	//private FileConfiguration config = null;
 	
@@ -72,6 +73,7 @@ public class main extends JavaPlugin {
 		plugin = this;
 		InitializeConfig();
 		thisLogger.info("creating event handler...");
+		myVersionString=this.getDescription().getVersion(); //must be done before meh is initialized
 		meh = new MultiEventHandler();
 		getCommand("wildportal").setExecutor(meh);//new MultiEventHandler()
 		//thisServer=this.getServer();

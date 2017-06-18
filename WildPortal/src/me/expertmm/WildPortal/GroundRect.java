@@ -16,6 +16,7 @@ public class GroundRect {
 	public int z=0;
 	public int width=1;
 	public int depth=1;
+	public String key=null;
 	
 	public GroundRect(int set_X, int set_Z, int set_Width, int set_Depth) {
 		this.x=set_X;
@@ -78,5 +79,11 @@ public class GroundRect {
 	}
 	public String getCenterString() {
 		return Integer.toString(x+width/2)+","+Integer.toString(z+depth/2);
+	}
+	public double getCenterX() {
+		return x+width/2;
+	}
+	public double getCenterZ() {
+		return z+depth/2;
 	}
 }

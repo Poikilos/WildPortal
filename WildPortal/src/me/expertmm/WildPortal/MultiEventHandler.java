@@ -21,11 +21,14 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
+//import org.bukkit.event.player.PlayerShearEntityEvent;
 //import org.bukkit.configuration.ConfigurationSection;
 //import org.bukkit.event.player.PlayerQuitEvent; //if you want to do public void onQuit9PlayerQuitEvent event) {}
 import org.bukkit.configuration.file.FileConfiguration;
 
 import me.expertmm.WildPortal.WildPortalPortal;
+
+
 
 
 
@@ -52,6 +55,9 @@ import org.bukkit.ChatColor;
 
 import com.google.common.base.Strings;
 
+
+
+//import java.awt.Color;
 //import java.io.BufferedReader;
 //import java.io.BufferedWriter;
 import java.io.File;
@@ -80,9 +86,18 @@ public class MultiEventHandler implements CommandExecutor, Listener {
 	//Thanks to Both class by JPG2000F on forums.bukkit.org
 	
 	//static Player thisPlayer = null;
-	public static String usagePlayerMsg=ChatColor.YELLOW+"/wildportal return";
-	public static String usageManageMsg=ChatColor.YELLOW+"/wildportal"+ChatColor.WHITE+": creates portal from next punched sign, "+ChatColor.YELLOW+"/wildportal remove"+ChatColor.WHITE+": remove portal status from next punched sign, "+ChatColor.YELLOW+"/wildportal select"+ChatColor.WHITE+": select (use before commands listed next...), "+ChatColor.YELLOW+"/wildportal set destination center <coordinates>"+ChatColor.WHITE+": modify portal rect so center is at specified location--can be x,z or x,y,z or world,x,y,z but y will be ignored and automatically found for wild (inhabitable) destination.";
-	public static String myNameAndVersion="WildPortal 2017-06-10";
+	public static String usagePlayerMsg=ChatColor.YELLOW+"/wildportal return"+ChatColor.WHITE+": return to your personal wild location where the wildportal initially dropped you";
+	public static String usageManageMsg=ChatColor.YELLOW+"/wildportal"+ChatColor.WHITE+": creates portal from next punched sign,\n" + 
+	                                    ChatColor.YELLOW+"/wildportal remove"+ChatColor.WHITE+": remove portal status from next punched sign,\n" + 
+	                                    ChatColor.YELLOW+"/wildportal select"+ChatColor.WHITE+": select (use before commands listed next...),\n" + 
+	                                    ChatColor.YELLOW+"/wildportal set destination center <coordinates>"+ChatColor.WHITE+": modify portal rect so center is at specified location--can be x,z or x,y,z or world,x,y,z but y will be ignored and automatically found for wild (inhabitable) destination.\n" +
+	                                    ChatColor.YELLOW+"/wildportal set destination width|depth <value>"+ChatColor.WHITE+": (only type width or depth not both) modify portal rect's x width or z depth (automatically size from center, though stored x and z are minimums).\n" +
+	                                    ChatColor.YELLOW+"/wildportal get destination"+ChatColor.WHITE+": See destination of current wildportal.\n" +
+	                                    ChatColor.YELLOW+"/wildportal set return <player> null"+ChatColor.WHITE+": clear return location of player\n" +
+	                                    ChatColor.YELLOW+"/wildportal verbose true|false"+ChatColor.WHITE+": reload data files (other than config) from drive, ignoring loaded data\n" +
+	                                    ChatColor.YELLOW+"/wildportal reload"+ChatColor.WHITE+": reload data files (other than config) from drive, ignoring loaded data\n" +
+	                                    ChatColor.YELLOW+"/wildportal save"+ChatColor.WHITE+": overwrite data files (other than config) with currently loaded data\n" +
+	                                    ChatColor.YELLOW+"/wildportal help"+ChatColor.WHITE+": show this help screen";
 	private main plugin = null; //public main InstanceOfMain = null; 
 	private Logger thisLogger = null;
 	private Server thisServer = null;
@@ -146,7 +161,7 @@ public class MultiEventHandler implements CommandExecutor, Listener {
 	    	thisServer=plugin.getServer();
 	    	participle="getting logger";
 	    	thisLogger=plugin.getLogger();
-	    	thisLogger.info("Loading "+myNameAndVersion+"...");
+	    	thisLogger.info("Loading WildPortal "+main.myVersionString+"...");
 	    	participle="getting config";
 	    	config=plugin.getConfig();
 	    	participle="getting plugin data folder";
@@ -254,13 +269,23 @@ public class MultiEventHandler implements CommandExecutor, Listener {
 				//if (aboutToBreakTeleporterWithNextClickPlayerList==null) aboutToBreakTeleporterWithNextClickPlayerList=new ArrayList<String>();
 				if (aboutToMakeTeleporterWithNextClickPlayerList.contains(player.getName())) {//make WildPortal instead (aboutToMakeTeleporterWithNextClickPlayerList.contains(player.getName()))
 					aboutToMakeTeleporterWithNextClickPlayerList.remove(player.getName());
-					boolean IsGood=addWildPortal(clickedLocation, world.getName(), "<wild>",-500,-500,1000,1000);
+					selectedWildPortalID=null;
+					selectedWildPortalWorldName=null;
+					boolean IsGood=addWildPortal(clickedLocation, world.getName(), "<wild>",-500,-500,1000,1000,true);
 					if (IsGood) {
 						player.sendMessage(ChatColor.GREEN+"Created WildPortal");
 						LastCreatedWildPortalFromPlayerLocation=player.getLocation();
 						SaveOptionsToConfig();
 						data.save();
 						//DumpWildPortalList();
+						if (!Strings.isNullOrEmpty(selectedWildPortalID)) {
+							if (!Strings.isNullOrEmpty(selectedWildPortalWorldName)) {
+								player.sendMessage(ChatColor.GRAY+"selected wildportal "+selectedWildPortalWorldName+"."+selectedWildPortalID);
+							}
+							else {
+								player.sendMessage(ChatColor.GRAY+"selected wildportal <null>."+selectedWildPortalID);
+							}
+						}
 					}
 					else {
 						player.sendMessage(ChatColor.RED+"Failed to create WildPortal. That location may already be a WildPortal.");
@@ -319,12 +344,22 @@ public class MultiEventHandler implements CommandExecutor, Listener {
 		//return IsGood;
 	}//end onInteractEvent
 	
-	public void usage(Player player) {
-		player.sendMessage(ChatColor.YELLOW+"Unknown WildPortal parameters. Try:");
-		player.sendMessage(ChatColor.YELLOW+usagePlayerMsg);
-		if (player.hasPermission("wildportal.manage")) player.sendMessage(ChatColor.YELLOW+usageManageMsg);
+	public void usage(Player player, Boolean badCommandMsgEnable) {
+		if (player.hasPermission("wildportal.manage")) {
+			player.sendMessage(ChatColor.WHITE+"WildPortal "+main.myVersionString);
+		}
+		if (badCommandMsgEnable) player.sendMessage(ChatColor.RED+"Unknown WildPortal parameters. Try:");
+		player.sendMessage(usagePlayerMsg);
+		if (player.hasPermission("wildportal.manage")) {
+			player.sendMessage(usageManageMsg);
+			player.sendMessage("(press 't' then scroll up with scroll wheel to see previous lines you may have missed)");
+		}
 	}
-
+	public static String getPrettyLocationString(Location location) {
+		String result="null";
+		if (location!=null) result=location.toString().replace(",",", ");
+		return result;
+	}
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		
 		//PluginManager plg = Bukkit.getPluginManager(); //Assigns plg to Bukkit.getPluginManager()
@@ -353,8 +388,7 @@ public class MultiEventHandler implements CommandExecutor, Listener {
 						if (IsVerbose) main.logWriteLine("about to check whether player has WildPortalReturn permission");
 						if (player.hasPermission("wildportal.return")){
 							Location returnLocation=null;
-							
-							returnLocation = data.getPlayerReturnLocation(player.getName());
+							returnLocation = data.getPlayerReturnLocation(player.getName(), thisServer);
 							if (returnLocation!=null) {
 								player.teleport(returnLocation);
 								//Boolean IsDeleted=data.deletePlayerData(player.getName());
@@ -428,7 +462,7 @@ public class MultiEventHandler implements CommandExecutor, Listener {
 							}//else player does not have own return location
 						}
 						else {
-							player.sendMessage(ChatColor.RED+"You can't go back.");
+							player.sendMessage(ChatColor.RED+"wildportal return is not available to your account (or rank) on this server.");
 						}
 					}
 					else if (args[0].equalsIgnoreCase("remove")) {
@@ -438,88 +472,141 @@ public class MultiEventHandler implements CommandExecutor, Listener {
 							player.sendMessage(ChatColor.AQUA+"Click a sign to remove the WildPortal");
 							player.sendMessage(ChatColor.GRAY+"(will not destroy the sign)...");
 						}
+						else player.sendMessage(ChatColor.RED+"You lack the necessary permission for WildPortal "+args[0]);
 					}
 					else if (args[0].equalsIgnoreCase("select")) {
 						if (player.hasPermission("wildportal.manage")){
 							if (!aboutToSelectTeleporterWithNextClickPlayerList.contains(player.getName())) aboutToSelectTeleporterWithNextClickPlayerList.add(player.getName());
 							player.sendMessage(ChatColor.AQUA+"Click a sign to select the WildPortal");
 						}
+						else player.sendMessage(ChatColor.RED+"You lack the necessary permission for WildPortal "+args[0]);
+					}
+					else if (args[0].equalsIgnoreCase("set") && args.length>1 && args[1].equalsIgnoreCase("return")) {
+						if (player.hasPermission("wildportal.manage")){
+							//wildportal set return <player> null
+							//wildportal 0=set 1=return 2=<player> 3=null
+							if (args.length>3) {
+								//Player modifyPlayer=thisServer.getPlayer(args[2]);
+								Location thisLocation=data.getPlayerReturnLocation(args[2], thisServer);
+								if (args[3].equalsIgnoreCase("null")) {
+									if (thisLocation!=null) {
+										data.deletePlayerData(args[2]);
+										thisLocation=data.getPlayerReturnLocation(args[2], thisServer);
+										player.sendMessage(ChatColor.GREEN+" player "+args[2]+" return location is now "+getPrettyLocationString(thisLocation));
+									}
+									else {
+										player.sendMessage(ChatColor.RED+" player "+args[2]+" does not yet have a return location.");;
+									}
+								}
+								else player.sendMessage(ChatColor.RED+" you must specify playername and value (only null is implemented) after set return");;
+							}
+							else player.sendMessage(ChatColor.RED+" you must specify playername and null after set return");;
+						}
+						else player.sendMessage(ChatColor.RED+"You lack the necessary permission for WildPortal "+args[0]);
 					}
 					else if (args[0].equalsIgnoreCase("set") && args.length>1 && args[1].equalsIgnoreCase("destination")) {
-						if (!Strings.isNullOrEmpty(selectedWildPortalID)) {
-							if (args.length>2 && args[2].equalsIgnoreCase("center")) {
-								if (args.length>3) {
-									String[] coords_strings=args[3].split(",");
-									if (coords_strings!=null) {
-										Boolean IsChanged=false;
-										if (coords_strings.length==4) {
-											//parseInt(String) returns a primitive int, valueOf(String) returns new Integer()
-											//this.wildportalList.get(selectedWildPortalIndex).SetDestAsWild(coords_strings[0],Integer.parseInt(coords_strings[1]), Integer.parseInt(coords_strings[3]));
-											//Location location = WildPortalPortal.getLocationFromID(player.getWorld(), selectedWildPortalID);
-											int newCenterX=Integer.parseInt(coords_strings[1]);
-											int newCenterZ=Integer.parseInt(coords_strings[3]);
-											data.setPortalDestinationCenter(player.getWorld().getName(), selectedWildPortalID, newCenterX, newCenterZ);
-											//NOTE: skip [2] since Y is not specified when wild
-											//NOTE: skip [0] since that is world name
-											//wildportalList[selectedWildPortalIndex].X=thisX;
-											//wildportalList[selectedWildPortalIndex].Z=thisZ;
-											IsChanged=true;
-										}
-										else if (coords_strings.length==3) {
-											//Location location = WildPortalPortal.getLocationFromID(player.getWorld(), selectedWildPortalID);
-											int newCenterX=Integer.parseInt(coords_strings[0]);
-											int newCenterZ=Integer.parseInt(coords_strings[2]);
-											//this.wildportalList.get(selectedWildPortalIndex).SetDestAsWild(this.wildportalList.get(selectedWildPortalIndex).getDestinationWorldName(), Integer.parseInt(coords_strings[0]), Integer.parseInt(coords_strings[2]));
-											data.setPortalDestinationCenter(player.getWorld().getName(), selectedWildPortalID, newCenterX, newCenterZ);
-											//NOTE: skip [1] since Y is not specified when wild
-											IsChanged=true;
-										}
-										else if (coords_strings.length==2) {
-											//Location location = WildPortalPortal.getLocationFromID(player.getWorld(), selectedWildPortalID);
-											int newCenterX=Integer.parseInt(coords_strings[0]);
-											int newCenterZ=Integer.parseInt(coords_strings[1]);
-											//this.wildportalList.get(selectedWildPortalIndex).SetDestAsWild(this.wildportalList.get(selectedWildPortalIndex).getDestinationWorldName(), Integer.parseInt(coords_strings[0]), Integer.parseInt(coords_strings[1]));
-											data.setPortalDestinationCenter(player.getWorld().getName(), selectedWildPortalID, newCenterX, newCenterZ);
-											IsChanged=true;
+						if (player.hasPermission("wildportal.manage")) {
+							if (!Strings.isNullOrEmpty(selectedWildPortalID)) {
+								if (args.length>2 && args[2].equalsIgnoreCase("center")) {
+									if (args.length>3) {
+										String[] coords_strings=args[3].split(",");
+										if (coords_strings!=null) {
+											Boolean IsChanged=false;
+											if (coords_strings.length==4) {
+												//parseInt(String) returns a primitive int, valueOf(String) returns new Integer()
+												//this.wildportalList.get(selectedWildPortalIndex).SetDestAsWild(coords_strings[0],Integer.parseInt(coords_strings[1]), Integer.parseInt(coords_strings[3]));
+												//Location location = WildPortalPortal.getLocationFromID(player.getWorld(), selectedWildPortalID);
+												int newCenterX=Integer.parseInt(coords_strings[1]);
+												int newCenterZ=Integer.parseInt(coords_strings[3]);
+												data.setPortalDestinationCenter(selectedWildPortalWorldName, selectedWildPortalID, newCenterX, newCenterZ);
+												//NOTE: skip [2] since Y is not specified when wild
+												//NOTE: skip [0] since that is world name
+												//wildportalList[selectedWildPortalIndex].X=thisX;
+												//wildportalList[selectedWildPortalIndex].Z=thisZ;
+												IsChanged=true;
+											}
+											else if (coords_strings.length==3) {
+												//Location location = WildPortalPortal.getLocationFromID(player.getWorld(), selectedWildPortalID);
+												int newCenterX=Integer.parseInt(coords_strings[0]);
+												int newCenterZ=Integer.parseInt(coords_strings[2]);
+												//this.wildportalList.get(selectedWildPortalIndex).SetDestAsWild(this.wildportalList.get(selectedWildPortalIndex).getDestinationWorldName(), Integer.parseInt(coords_strings[0]), Integer.parseInt(coords_strings[2]));
+												data.setPortalDestinationCenter(selectedWildPortalWorldName, selectedWildPortalID, newCenterX, newCenterZ);
+												//NOTE: skip [1] since Y is not specified when wild
+												IsChanged=true;
+											}
+											else if (coords_strings.length==2) {
+												//Location location = WildPortalPortal.getLocationFromID(player.getWorld(), selectedWildPortalID);
+												int newCenterX=Integer.parseInt(coords_strings[0]);
+												int newCenterZ=Integer.parseInt(coords_strings[1]);
+												//this.wildportalList.get(selectedWildPortalIndex).SetDestAsWild(this.wildportalList.get(selectedWildPortalIndex).getDestinationWorldName(), Integer.parseInt(coords_strings[0]), Integer.parseInt(coords_strings[1]));
+												data.setPortalDestinationCenter(selectedWildPortalWorldName, selectedWildPortalID, newCenterX, newCenterZ);
+												IsChanged=true;
+											}
+											else {
+												player.sendMessage(ChatColor.RED+"no valid coordinates specified after center: try center <x>,<y>,<z> or center <worldname>,<x>,<y>,<z>");
+											}
+											
+											if (IsChanged) {
+												//NOTE: setPortalDestinationCenter DOES automatically save
+												Location destLocation=data.getDestinationCenterIfPortalElseNull(thisServer.getWorld(selectedWildPortalWorldName), selectedWildPortalID, thisServer);
+												player.sendMessage(ChatColor.GREEN+"Destination of selected WildPortal is now "+getPrettyLocationString(destLocation));
+												GroundRect rect=data.getPortalDestination(selectedWildPortalWorldName, selectedWildPortalID);
+												if (rect!=null) player.sendMessage(ChatColor.GRAY+" new rectangle: "+rect.toString());
+												else player.sendMessage(ChatColor.RED+" ERROR: new rectangle is null");
+												player.sendMessage(ChatColor.GRAY+" (selected WildPortal is at "+((selectedWildPortalID!=null)?selectedWildPortalID:"null")+")");
+											}
 										}
 										else {
 											player.sendMessage(ChatColor.RED+"no valid coordinates specified after center: try center <x>,<y>,<z> or center <worldname>,<x>,<y>,<z>");
 										}
-										
-										if (IsChanged) {
-											//NOTE: setPortalDestinationCenter DOES automatically save
-											Location destLocation=data.getDestinationCenterIfPortalElseNull(player.getWorld(), selectedWildPortalID);
-											player.sendMessage(ChatColor.GREEN+"Destination of selected WildPortal is now "+((destLocation!=null)?destLocation.toString():"null"));
-											player.sendMessage(ChatColor.GRAY+"(selected WildPortal is at "+((selectedWildPortalID!=null)?selectedWildPortalID:"null")+")");
-										}
 									}
-									else {
-										player.sendMessage(ChatColor.RED+"no valid coordinates specified after center: try center <x>,<y>,<z> or center <worldname>,<x>,<y>,<z>");
-									}
+									else player.sendMessage(ChatColor.RED+"no coordinates specified after center");
 								}
-								else player.sendMessage(ChatColor.RED+"no coordinates specified after center");
+								else if (args.length>2 && args[2].equalsIgnoreCase("width")) {
+									if (args.length>3) {
+										int newSize=Integer.parseInt(args[3]);
+										data.setPortalDestinationWidth(selectedWildPortalWorldName, selectedWildPortalID, newSize);
+										GroundRect rect=data.getPortalDestination(selectedWildPortalWorldName, selectedWildPortalID);
+										player.sendMessage(ChatColor.GREEN+"Destination of selected WildPortal is now "+((rect!=null)?rect.toString(","):"null"));
+									}
+									else player.sendMessage(ChatColor.RED+"no value specified after "+args[2]);
+								}
+								else if (args.length>2 && args[2].equalsIgnoreCase("depth")) {
+									if (args.length>3) {
+										int newSize=Integer.parseInt(args[3]);
+										data.setPortalDestinationDepth(selectedWildPortalWorldName, selectedWildPortalID, newSize);
+										GroundRect rect=data.getPortalDestination(selectedWildPortalWorldName, selectedWildPortalID);
+										player.sendMessage(ChatColor.GREEN+"Destination of selected WildPortal is now "+((rect!=null)?rect.toString(","):"null"));
+									}
+									else player.sendMessage(ChatColor.RED+"no value specified after "+args[2]);
+								}
+								else {
+									player.sendMessage(ChatColor.RED+"WildPortal set commands available: /wildportal set destination center <x>,<z> [or <x>,<y>,<z>]");
+								}
 							}
 							else {
-								player.sendMessage(ChatColor.RED+"WildPortal set commands available: /wildportal set destination center <x>,<z> [or <x>,<y>,<z>]");
+								player.sendMessage(ChatColor.RED+"No WildPortal is selected. First try /wildportal select then punching a node");								
 							}
 						}
-						else {
-							player.sendMessage(ChatColor.RED+"No WildPortal is selected. First try /wildportal select then punching a node");								
-						}
+						else player.sendMessage(ChatColor.RED+"You lack the necessary permission for WildPortal "+args[0]);
 					}
 					else if (args[0].equalsIgnoreCase("get") && args.length>1 && args[1].equalsIgnoreCase("destination")) {
-						GroundRect rect=data.getPortalDestination(player.getWorld().getName(), selectedWildPortalID);
-						if (rect!=null) {
-							if (args.length>2 && args[2].equalsIgnoreCase("center")) {
-								player.sendMessage(ChatColor.WHITE+"WildPortal destination center: " + rect.getCenterString());
+						if (player.hasPermission("wildportal.manage")) {
+							GroundRect rect=data.getPortalDestination(player.getWorld().getName(), selectedWildPortalID);
+							if (rect!=null) {
+								if (args.length>2 && args[2].equalsIgnoreCase("center")) {
+									player.sendMessage(ChatColor.WHITE+"WildPortal destination center: " + rect.getCenterString());
+								}
+								else {
+									player.sendMessage(ChatColor.WHITE+"WildPortal destination: " + rect.toString());
+								}
+								if (rect.key!=null) player.sendMessage(" keyword: "+ChatColor.WHITE+rect.key);
 							}
 							else {
-								player.sendMessage(ChatColor.WHITE+"WildPortal destination: " + rect.toString());
+								player.sendMessage(ChatColor.RED+"No WildPortal is selected. First try /wildportal select then punching a node");								
 							}
 						}
-						else {
-							player.sendMessage(ChatColor.RED+"No WildPortal is selected. First try /wildportal select then punching a node");								
-						}
+						else player.sendMessage(ChatColor.RED+"You lack the necessary permission for WildPortal "+args[0]);
 					}
 					else if (args[0].equalsIgnoreCase("verbose")) {
 						if (player.hasPermission("wildportal.manage")){
@@ -534,9 +621,24 @@ public class MultiEventHandler implements CommandExecutor, Listener {
 							}
 							if (previousIsVerbose!=IsVerbose) SaveOptionsToConfig();
 						}
+						else player.sendMessage(ChatColor.RED+"You lack the necessary permission for WildPortal "+args[0]);
+					}
+					else if (args[0].equalsIgnoreCase("reload")) {
+						if (player.hasPermission("wildportal.manage")){
+							data.load();
+							player.sendMessage(ChatColor.GREEN+"WildPortal settings have been reloaded.");
+						}
+						else player.sendMessage(ChatColor.RED+"You lack the necessary permission for WildPortal "+args[0]);
+					}
+					else if (args[0].equalsIgnoreCase("save")) {
+						if (player.hasPermission("wildportal.manage")){
+							data.save();
+							player.sendMessage(ChatColor.GREEN+"WildPortal settings have been saved.");
+						}
+						else player.sendMessage(ChatColor.RED+"You lack the necessary permission for WildPortal "+args[0]);
 					}
 					else {
-						usage(player);
+						usage(player, !args[0].equalsIgnoreCase("help"));
 					}
 				}
 				else {
@@ -548,7 +650,7 @@ public class MultiEventHandler implements CommandExecutor, Listener {
 						player.sendMessage(ChatColor.GRAY+"(Its text can say anything and won't be changed)...");
 					}
 					else {
-						player.sendMessage(ChatColor.RED+"WildPortal: Sorry you are not authorized to create a WildPortal.");
+						player.sendMessage(ChatColor.RED+"WildPortal: Sorry you do not have the necessary permission to create a WildPortal.");
 					}
 				}//end else no args
 			}
@@ -567,22 +669,26 @@ public class MultiEventHandler implements CommandExecutor, Listener {
 		
 	//}
 
-	public boolean addWildPortal(Location thisSignLocation, String destinationWorldName, String destinationKeyword, int dest_X, int dest_Y, int dest_Width, int dest_Height) {
+	public boolean addWildPortal(Location thisSignLocation, String destinationWorldName, String destinationKeyword, int dest_X, int dest_Y, int dest_Width, int dest_Depth, Boolean select_enable) {
 		boolean IsGood=false;
 		try {
 			if (!data.isPortal(thisSignLocation)) {
-				//WildPortalPortal newWildportalportal = new WildPortalPortal(thisSignLocation.getBlockX(), thisSignLocation.getBlockY(), thisSignLocation.getBlockZ(), thisSignLocation.getWorld().getName(), destinationWorldName,destinationKeyword,dest_X,dest_Y,dest_Width,dest_Height);
-				GroundRect destGroundRect=new GroundRect(dest_X, dest_Y, dest_Width, dest_Height);
+				//WildPortalPortal newWildportalportal = new WildPortalPortal(thisSignLocation.getBlockX(), thisSignLocation.getBlockY(), thisSignLocation.getBlockZ(), thisSignLocation.getWorld().getName(), destinationWorldName,destinationKeyword,dest_X,dest_Y,dest_Width,dest_Depth);
+				GroundRect destGroundRect=new GroundRect(dest_X, dest_Y, dest_Width, dest_Depth);
 				destGroundRect.worldName=destinationWorldName;
 				data.createPortalToWild(thisSignLocation, "<wild>", destGroundRect);
+				if (select_enable) {
+					selectedWildPortalID=WildPortalPortal.getIDFromLocation(thisSignLocation);
+					selectedWildPortalWorldName=thisSignLocation.getWorld().getName();
+				}
 				IsGood=true;
 		    	if (IsVerbose) {
-					main.logWriteLine("verbose message: created WildPortal from sign at "+thisSignLocation.toString()+".");
+					main.logWriteLine("verbose message: created WildPortal from sign at "+getPrettyLocationString(thisSignLocation)+".");
 		    	}
 		    	//NOTE: createPortalToWild DOES automatically save
 			}
 			else {
-				main.logWriteLine("WARNING: was already a WildPortal--sign at "+thisSignLocation.toString()+".");
+				main.logWriteLine("WARNING: was already a WildPortal--sign at "+getPrettyLocationString(thisSignLocation)+".");
 			}
 		}
 		catch (Exception e) {
@@ -625,73 +731,80 @@ public class MultiEventHandler implements CommandExecutor, Listener {
 	*/
 
 	private void doWildPortal(Player player, GroundRect destRect) {
-		
-		//deprecated String WildPortalAdminName = main.config.getString("WildPortalAdmin.playerName");
-		//deprecated main.logWriteLine("WildPortalAdmin.playerName is "+WildPortalAdminName);
-		if (IsVerbose) main.logWriteLine("doWildPortal: getting rectangle");
-		int minRandomX=destRect.x;
-		int minRandomZ=destRect.z;
-		int maxRandomX=destRect.x+destRect.width;
-		int maxRandomZ=destRect.z+destRect.depth;
-		int rangeX=maxRandomX-minRandomX;
-		int rangeZ=maxRandomZ-minRandomZ;
-		Random rnd = new Random();
-		int randomCountingNumberX=0;
-		int randomCountingNumberZ=0;
-		int randomIntX=0;
-		int randomIntZ=0;
-		
-		//Location sourceLocation = player.getLocation();
-		
-		if (IsVerbose) main.logWriteLine("doWildPortal: getting destination world");
-		//World destWorld=thisWildPortal.getDestinationWorld(thisServer,player.getWorld());
-		if (destRect.worldName==null || destRect.worldName.equals("<this>")) destRect.worldName=player.getWorld().getName();
-		World destWorld=thisServer.getWorld(destRect.worldName);
-		//Location destLocation = new Location(world, 0,68,0);
-		//Location destLocation = new Location(world, sourceLocation.getX(), sourceLocation.getY()+20.0, sourceLocation.getZ() );
-		Location randomLocation = null;
-		double minY=49.0;
-		LastUsedMaterial=Material.AIR;
-		LastUsedY=-1;
-		Location checkedLocation=null;
-		int MaxTryCount=100;
-		int TryCount=0;//tries so far
-		
+		Location alreadyHasLocation=data.getPlayerReturnLocation(player.getName(), thisServer);
 		boolean IsTeleported=false;
-		String LastYMsg="";
-		while (TryCount<MaxTryCount) {
-			if (IsVerbose) main.logWriteLine("doWildPortal: getting location on ground if ground is ok");
-			randomCountingNumberX=rnd.nextInt(rangeX+1);//+1 since exclusive
-			randomCountingNumberZ=rnd.nextInt(rangeZ+1);//+1 since exclusive
-			randomIntX=randomCountingNumberX+minRandomX;//allows possibly negative (if minimum is negative)
-			randomIntZ=randomCountingNumberZ+minRandomZ;//allows possibly negative (if minimum is negative)
-			randomLocation = new Location(destWorld, (double)randomIntX,64.0,(double)randomIntZ);
-			checkedLocation = getLocationOnGround(destWorld, randomLocation, minY, player);
-			if (checkedLocation.getY()>=minY) {
-				LastYMsg="try is at Y "+String.valueOf(checkedLocation.getY());
-				checkedLocation.setY(checkedLocation.getY()+(double)StartAboveGroundByInt);
-				//Boolean IsDeleted=data.deletePlayerData(player.getName());
-				data.setPlayerReturnLocation(player.getName(),player.getLocation());
-				if (thisServer!=null) thisServer.broadcastMessage(player.getName() + " is being born in "+destWorld.getName()+"...");
-				int NoDamageSeconds=20;
-				int TicksPerSecond=20;
-				int NoDamageTicks=NoDamageSeconds*TicksPerSecond;
-				if (player.getMaximumNoDamageTicks()<NoDamageTicks) player.setMaximumNoDamageTicks(NoDamageTicks);
-				player.setNoDamageTicks(NoDamageTicks);//tick is 1/20th of a second (50ms)
-				player.teleport(checkedLocation);
-				player.sendMessage("WildPortal: now would be a good time to type /sethome");
-				if (player.hasPermission("wildportal.return")) player.sendMessage("WildPortal: however, to get back here you can also type /wildportal return");
-				IsTeleported=true;
-				//Bukkit.broadcast(player.getName() + " has arrived.");
-				if (thisServer!=null) thisServer.broadcastMessage((player.getName() + " has arrived."));
-				main.logWriteLine("WildPortal destination in range ("+destRect.toString(",")+") for "+player.getName()+" was: "+checkedLocation.toString());
-				break;
-			}
-			else LastYMsg="couldn't try too low Y "+String.valueOf(checkedLocation.getY());
-			TryCount++;
+		int TryCount=0;//tries so far
+		if (alreadyHasLocation!=null) {
+			TryCount=-1;
+			player.teleport(alreadyHasLocation);
+			IsTeleported=true;
 		}
-		if (!IsTeleported) {
-			player.sendMessage("WildPortal: Uh oh, portal couldn't find a suitable location for you yet--tried "+String.valueOf(TryCount)+"times--last try was at or above ("+String.valueOf(checkedLocation.getX() )+","+String.valueOf(checkedLocation.getY())+","+String.valueOf(checkedLocation.getZ())+") [last Y:"+String.valueOf(LastUsedY)+"; last used block id:"+String.valueOf(LastUsedMaterial)+"; LastCheckedBlockID:"+String.valueOf(LastCheckedMaterial)+"; LastYMsg:"+LastYMsg+"]. Please try again.");
+		else {
+			//deprecated String WildPortalAdminName = main.config.getString("WildPortalAdmin.playerName");
+			//deprecated main.logWriteLine("WildPortalAdmin.playerName is "+WildPortalAdminName);
+			if (IsVerbose) main.logWriteLine("doWildPortal: getting rectangle");
+			int minRandomX=destRect.x;
+			int minRandomZ=destRect.z;
+			int maxRandomX=destRect.x+destRect.width;
+			int maxRandomZ=destRect.z+destRect.depth;
+			int rangeX=maxRandomX-minRandomX;
+			int rangeZ=maxRandomZ-minRandomZ;
+			Random rnd = new Random();
+			int randomCountingNumberX=0;
+			int randomCountingNumberZ=0;
+			int randomIntX=0;
+			int randomIntZ=0;
+			
+			//Location sourceLocation = player.getLocation();
+			
+			if (IsVerbose) main.logWriteLine("doWildPortal: getting destination world");
+			//World destWorld=thisWildPortal.getDestinationWorld(thisServer,player.getWorld());
+			if (destRect.worldName==null || destRect.worldName.equals("<this>")) destRect.worldName=player.getWorld().getName();
+			World destWorld=thisServer.getWorld(destRect.worldName);
+			//Location destLocation = new Location(world, 0,68,0);
+			//Location destLocation = new Location(world, sourceLocation.getX(), sourceLocation.getY()+20.0, sourceLocation.getZ() );
+			Location randomLocation = null;
+			double minY=49.0;
+			LastUsedMaterial=Material.AIR;
+			LastUsedY=-1;
+			Location checkedLocation=null;
+			int MaxTryCount=100;
+			
+			String LastYMsg="";
+			while (TryCount<MaxTryCount) {
+				if (IsVerbose) main.logWriteLine("doWildPortal: getting location on ground if ground is ok");
+				randomCountingNumberX=rnd.nextInt(rangeX+1);//+1 since exclusive
+				randomCountingNumberZ=rnd.nextInt(rangeZ+1);//+1 since exclusive
+				randomIntX=randomCountingNumberX+minRandomX;//allows possibly negative (if minimum is negative)
+				randomIntZ=randomCountingNumberZ+minRandomZ;//allows possibly negative (if minimum is negative)
+				randomLocation = new Location(destWorld, (double)randomIntX,64.0,(double)randomIntZ);
+				checkedLocation = getLocationOnGround(destWorld, randomLocation, minY, player);
+				if (checkedLocation.getY()>=minY) {
+					LastYMsg="try is at Y "+String.valueOf(checkedLocation.getY());
+					checkedLocation.setY(checkedLocation.getY()+(double)StartAboveGroundByInt);
+					//Boolean IsDeleted=data.deletePlayerData(player.getName());
+					data.setPlayerReturnLocation(player.getName(),checkedLocation);
+					if (thisServer!=null) thisServer.broadcastMessage(player.getName() + " is being born in "+destWorld.getName()+"...");
+					int NoDamageSeconds=20;
+					int TicksPerSecond=20;
+					int NoDamageTicks=NoDamageSeconds*TicksPerSecond;
+					if (player.getMaximumNoDamageTicks()<NoDamageTicks) player.setMaximumNoDamageTicks(NoDamageTicks);
+					player.setNoDamageTicks(NoDamageTicks);//tick is 1/20th of a second (50ms)
+					player.teleport(checkedLocation);
+					player.sendMessage("WildPortal: now would be a good time to type /sethome");
+					if (player.hasPermission("wildportal.return")) player.sendMessage("WildPortal: however, to get back here you can also type /wildportal return");
+					IsTeleported=true;
+					//Bukkit.broadcast(player.getName() + " has arrived.");
+					if (thisServer!=null) thisServer.broadcastMessage((player.getName() + " has arrived."));
+					main.logWriteLine("WildPortal destination in range ("+destRect.toString(",")+") for "+player.getName()+" was: "+getPrettyLocationString(checkedLocation));
+					break;
+				}
+				else LastYMsg="couldn't try too low Y "+String.valueOf(checkedLocation.getY());
+				TryCount++;
+			}
+			if (!IsTeleported) {
+				player.sendMessage("WildPortal: Uh oh, portal couldn't find a suitable location for you yet--tried "+String.valueOf(TryCount)+"times--last try was at or above ("+getPrettyLocationString(checkedLocation)+") [last Y:"+String.valueOf(LastUsedY)+"; last used block id:"+String.valueOf(LastUsedMaterial)+"; LastCheckedBlockID:"+String.valueOf(LastCheckedMaterial)+"; LastYMsg:"+LastYMsg+"]. Please try again.");
+			}
 		}
 	}//end doWildPortal
 	

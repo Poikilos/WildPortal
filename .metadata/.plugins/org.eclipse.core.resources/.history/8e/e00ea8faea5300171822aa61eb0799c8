@@ -1,0 +1,16 @@
+name: WildPortal
+main: me.expertmm.WildPortal.main
+version: 1.5.2.4
+commands:
+  wildportal:
+    description: Sends you to unclaimed lands in the wild
+    usage: "Usage: /wildportal (then touch any sign) : create; /wildportal return : return to source; /wildportal remove : remove wildportal from block"
+
+permissions:
+  wildportal.manage:
+    description: lets a player create WildPortal using /WildPortal then clicking sign
+    default: op
+  wildportal.return:
+    description: lets a player go back to the portal as long as the server has not restarted
+    default: op
+    

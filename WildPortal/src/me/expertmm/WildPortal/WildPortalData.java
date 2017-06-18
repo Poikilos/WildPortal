@@ -29,7 +29,23 @@ public class WildPortalData {
 	public FileConfiguration players;
 	public File portalsFile;
 	public FileConfiguration portals;
-	
+	//public WildPortalPortal getWildPortalAt(Location location) {
+	//	WildPortalPortal result=null;
+	//	if (portals.contains(location.getWorld().getName() + "." + WildPortalPortal.getIDFromLocation(location))) {
+	//		
+	//	}
+	//	return result;
+	//}	
+	//public void deletePortalData(Location location) {
+	//	portals.set(WildPortalPortal.getIDFromLocation(location), null);
+	//}	
+	//public Location getDestionationIfPortalElseNull(Location location) {
+	//	Location result=null;
+	//	if (isPortal(location)) {
+	//		
+	//	}
+	//	return result;
+	//}
 	public WildPortalData(File thisDataFolder) {
 		this.dataFolder=thisDataFolder;
 		try {
@@ -67,52 +83,53 @@ public class WildPortalData {
 	        e.printStackTrace();
 	    }
 	}
-	public Location getPlayerReturnLocation(String playerName) {
-		return (players.contains(playerName + "." + "returnLocation"))?((Location)players.get(playerName + "." + "returnLocation")):null;
+	public void save() {
+	    try {
+	    	players.save(playersFile);
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    }
+	    try {
+	    	portals.save(portalsFile);
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    }
 	}
-	public GroundRect getPortalDestination(String worldName, Location location) {
+	public void createPortalToWild(Location location, String destinationKeyword, GroundRect destGroundRect) {
+		int sourceX=location.getBlockX();
+		int sourceY=location.getBlockY();
+		int sourceZ=location.getBlockZ();
+		String sourceWorldName=location.getWorld().getName();
 		String wpid=WildPortalPortal.getIDFromLocation(location);
-		return getPortalDestination(worldName, wpid);
+		portals.set(sourceWorldName + "." + wpid + ".source.x", sourceX);
+		portals.set(sourceWorldName + "." + wpid + ".source.y", sourceY);
+		portals.set(sourceWorldName + "." + wpid + ".source.z", sourceZ);
+		portals.set(sourceWorldName + "." + wpid + ".source.world", sourceWorldName);
+		portals.set(sourceWorldName + "." + wpid + ".destination.world", destGroundRect.worldName);
+		portals.set(sourceWorldName + "." + wpid + ".destination.keyword", destinationKeyword);
+		portals.set(sourceWorldName + "." + wpid + ".destination.x", destGroundRect.x);
+		portals.set(sourceWorldName + "." + wpid + ".destination.z", destGroundRect.z);
+		portals.set(sourceWorldName + "." + wpid + ".destination.width", destGroundRect.width);
+		portals.set(sourceWorldName + "." + wpid + ".destination.depth", destGroundRect.depth);
+		portals.set(sourceWorldName + "." + wpid + ".destination.yaw", destGroundRect.yaw);
+		List<String> allowedPlayerList = Arrays.asList("<Everyone>");  // use comma for more
+		portals.set(sourceWorldName + "." + wpid + ".allowedPlayerList", allowedPlayerList);
+		save();
 	}
-	public GroundRect getPortalDestination(String worldName, String wpid) {
-		GroundRect result=null; //new GroundRect(0, 0, 0, 0);
-		if ((wpid!=null) && portals.contains(worldName + "." + wpid + "." + "destination")) {
-			int x = portals.getInt(worldName + "." + wpid + "." + "destination" + "." + "x");
-			int z = portals.getInt(worldName + "." + wpid + "." + "destination" + "." + "z");
-			int width = portals.getInt(worldName + "." + wpid + "." + "destination" + "." + "width");
-			int depth = portals.getInt(worldName + "." + wpid + "." + "destination" + "." + "depth");
-			result = new GroundRect(x,z, width, depth);
-			result.yaw=(float)portals.getDouble(worldName + "." + wpid + "." + "destination.yaw");
-			String destWorldName=portals.getString(worldName + "." + wpid + "." + "destination.world");
-			if (destWorldName==null) destWorldName="<this>";
-			if (destWorldName.equals("<this>")) destWorldName=worldName;
-			result.worldName=destWorldName;
-		}
-		else {
-			main.logWriteLine("getPortalDestination ERROR: no portal is at block " + worldName + "."+((wpid!=null)?wpid:"null"));
-		}
-		return result;
-	}
-	//public WildPortalPortal getWildPortalAt(Location location) {
-	//	WildPortalPortal result=null;
-	//	if (portals.contains(location.getWorld().getName() + "." + WildPortalPortal.getIDFromLocation(location))) {
-	//		
-	//	}
-	//	return result;
-	//}
 	public void setPortalDestination(String sourceWorldName, Location sourceLocation, GroundRect rect) {
-		portals.set(sourceWorldName + "." + WildPortalPortal.getIDFromLocation(sourceLocation) + "." + "destination" + "." + "x", rect.x);
-		portals.set(sourceWorldName + "." + WildPortalPortal.getIDFromLocation(sourceLocation) + "." + "destination" + "." + "z", rect.z);
-		portals.set(sourceWorldName + "." + WildPortalPortal.getIDFromLocation(sourceLocation) + "." + "destination" + "." + "width", rect.width);
-		portals.set(sourceWorldName + "." + WildPortalPortal.getIDFromLocation(sourceLocation) + "." + "destination" + "." + "depth", rect.depth);
-		portals.set(sourceWorldName + "." + WildPortalPortal.getIDFromLocation(sourceLocation) + "." + "destination" + "." + "world", rect.worldName);
+		portals.set(sourceWorldName + "." + WildPortalPortal.getIDFromLocation(sourceLocation) + ".destination.x", rect.x);
+		portals.set(sourceWorldName + "." + WildPortalPortal.getIDFromLocation(sourceLocation) + ".destination.z", rect.z);
+		portals.set(sourceWorldName + "." + WildPortalPortal.getIDFromLocation(sourceLocation) + ".destination.width", rect.width);
+		portals.set(sourceWorldName + "." + WildPortalPortal.getIDFromLocation(sourceLocation) + ".destination.depth", rect.depth);
+		portals.set(sourceWorldName + "." + WildPortalPortal.getIDFromLocation(sourceLocation) + ".destination.world", rect.worldName);
 		save();
 	}
 	public Boolean setPortalDestinationCenter(Location location, int newCenterX, int newCenterZ) {
 		Boolean result=false;
 		String wpid=WildPortalPortal.getIDFromLocation(location);
-		if (portals.contains(location.getWorld().getName() + "." + wpid + "." + "destination")) {
+		if (portals.contains(location.getWorld().getName() + "." + wpid + ".destination")) {
 			result=setPortalDestinationCenter(location.getWorld().getName(), wpid, newCenterX, newCenterZ);
+			//setPortalDestinationCenter DOES automatically save
 		}
 		else {
 			main.logWriteLine("setPortalDestinationCenter ERROR: no portal is at "+location.toString());
@@ -121,11 +138,13 @@ public class WildPortalData {
 	}
 	public Boolean setPortalDestinationCenter(String worldName, String wpid, int newCenterX, int newCenterZ) {
 		Boolean result=false;
-		if (portals.contains(worldName + "." + wpid + "." + "destination")) {
-			int width = portals.getInt(worldName + "." + wpid + "." + "destination" + "." + "width");
-			int depth = portals.getInt(worldName + "." +wpid + "." + "destination" + "." + "depth");
-			portals.set(worldName + "." + wpid + "." + "destination" + "." + "x", newCenterX-width/2);
-			portals.set(worldName + "." + wpid + "." + "destination" + "." + "z", newCenterZ-depth/2);
+		if (portals.contains(worldName + "." + wpid + ".destination")) {
+			int width = portals.getInt(worldName + "." + wpid + ".destination.width");
+			int depth = portals.getInt(worldName + "." +wpid + ".destination.depth");
+			portals.set(worldName + "." + wpid + ".destination.x", newCenterX-width/2);
+			portals.set(worldName + "." + wpid + ".destination.z", newCenterZ-depth/2);
+			portals.set(worldName + "." + wpid + ".destination.width", width);
+			portals.set(worldName + "." + wpid + ".destination.depth", depth);
 			save();
 			result=true;
 		}
@@ -134,9 +153,45 @@ public class WildPortalData {
 		}
 		return result;
 	}
-	//public void deletePortalData(Location location) {
-	//	portals.set(WildPortalPortal.getIDFromLocation(location), null);
-	//}
+	public Boolean setPortalDestinationWidth(String worldName, String wpid, int newSize) {
+		Boolean result=false;
+		if (portals.contains(worldName + "." + wpid + ".destination")) {
+			int oldSize = portals.getInt(worldName + "." + wpid + ".destination.width");
+			int center = portals.getInt(worldName + "." + wpid + ".destination.x") + oldSize/2;
+			portals.set(worldName + "." + wpid + ".destination.x", center-newSize/2);
+			portals.set(worldName + "." + wpid + ".destination.width", newSize);
+			save();
+			result=true;
+		}
+		else {
+			main.logWriteLine("setPortalDestinationCenter ERROR: no portal is at worldName."+wpid);
+		}
+		return result;
+	}	
+	public Boolean setPortalDestinationDepth(String worldName, String wpid, int newSize) {
+		Boolean result=false;
+		if (portals.contains(worldName + "." + wpid + ".destination")) {
+			int oldSize = portals.getInt(worldName + "." + wpid + ".destination.depth");
+			int center = portals.getInt(worldName + "." + wpid + ".destination.z") + oldSize/2;
+			portals.set(worldName + "." + wpid + ".destination.z", center-newSize/2);
+			portals.set(worldName + "." + wpid + ".destination.depth", newSize);
+			save();
+			result=true;
+		}
+		else {
+			main.logWriteLine("setPortalDestinationCenter ERROR: no portal is at worldName."+wpid);
+		}
+		return result;
+	}
+	public void setPlayerReturnLocation(String playerName, Location location) {
+		//NOTE: this is a cross-world configuration--player can only have one home on server.
+		players.set(playerName + ".returnLocation.world", location.getWorld().getName());
+		players.set(playerName + ".returnLocation.x", location.getX());
+		players.set(playerName + ".returnLocation.y", location.getY());
+		players.set(playerName + ".returnLocation.z", location.getZ());
+		players.set(playerName + ".returnLocation.yaw", location.getYaw());
+		save();
+	}
 	public Boolean deletePortalData(String worldName, String wpid) {
 		Boolean result=false;
 		String path=worldName+"."+wpid;
@@ -156,57 +211,69 @@ public class WildPortalData {
 		}
 		return result;
 	}
+
 	public Boolean isPortal(Location location) {
 		return portals.contains(location.getWorld().getName() + "." + WildPortalPortal.getIDFromLocation(location));
 	}
-	//public Location getDestionationIfPortalElseNull(Location location) {
-	//	Location result=null;
-	//	if (isPortal(location)) {
-	//		
-	//	}
-	//	return result;
-	//}
-	public Location getDestinationCenterIfPortalElseNull(World world, String wpid) {
-		Location result=null;
-		if (portals.contains(world.getName() + "." + wpid)) {
-			result=WildPortalPortal.getLocationFromID(world, wpid);
-		}
-		return result;
-	}
-	public void createPortalToWild(Location location, String destinationKeyword, GroundRect destGroundRect) {
-		int sourceX=location.getBlockX();
-		int sourceY=location.getBlockY();
-		int sourceZ=location.getBlockZ();
-		String sourceWorldName=location.getWorld().getName();
-		String wpid=WildPortalPortal.getIDFromLocation(location);
-		portals.set(sourceWorldName + "." + wpid + "." + "source.x", Integer.toString(sourceX));
-		portals.set(sourceWorldName + "." + wpid + "." + "source.y", Integer.toString(sourceY));
-		portals.set(sourceWorldName + "." + wpid + "." + "source.z", Integer.toString(sourceZ));
-		portals.set(sourceWorldName + "." + wpid + "." + "source.world", sourceWorldName);
-		portals.set(sourceWorldName + "." + wpid + "." + "destination.world", destGroundRect.worldName);
-		portals.set(sourceWorldName + "." + wpid + "." + "destination.keyword", destinationKeyword);
-		portals.set(sourceWorldName + "." + wpid + "." + "destination.x", Integer.toString(destGroundRect.x));
-		portals.set(sourceWorldName + "." + wpid + "." + "destination.z", Integer.toString(destGroundRect.z));
-		portals.set(sourceWorldName + "." + wpid + "." + "destination.width", Integer.toString(destGroundRect.width));
-		portals.set(sourceWorldName + "." + wpid + "." + "destination.depth", Integer.toString(destGroundRect.depth));
-		portals.set(sourceWorldName + "." + wpid + "." + "destination.yaw", Double.toString(destGroundRect.yaw));
-		List<String> allowedPlayerList = Arrays.asList("<Everyone>");  // use comma for more
-		portals.set(sourceWorldName + "." + wpid + "." + "allowedPlayerList", allowedPlayerList);
-		save();
-	}
-	public Location getPlayerReturnLocation(Server thisServer, String playerName) {
+	/*
+	public Location getPlayerReturnLocation(String playerName, Server server) {
 		Location location=null;
-		if (players.contains(playerName + "." + "returnLocation")) {
-			String worldName = players.getString(playerName + "." + "returnLocation" + "." + "worldName");
+		if (players.contains(playerName + ".returnLocation")) {
+			double x=players.getDouble(playerName + ".returnLocation.x");
+			double y=players.getDouble(playerName + ".returnLocation.y");
+			double z=players.getDouble(playerName + ".returnLocation.z");
+			String worldName=players.getString(playerName + ".returnLocation.world");
+			location=new Location(server.getWorld(worldName), x, y, z);
+		}
+		return location;//?(players.get(playerName + ".returnLocation")):null;
+	}
+	*/
+	public Location getPlayerReturnLocation(String playerName, Server thisServer) {
+		Location location=null;
+		if (players.contains(playerName + ".returnLocation")) {
+			String worldName = players.getString(playerName + ".returnLocation.world");
 			World world = thisServer.getWorld(worldName);
-			double x = players.getDouble(playerName + "." + "returnLocation" + "." + "x");
-			double y = players.getDouble(playerName + "." + "returnLocation" + "." + "y");
-			double z = players.getDouble(playerName + "." + "returnLocation" + "." + "z");
-			float yaw = (float)players.getDouble(playerName + "." + "returnLocation" + "." + "yaw");
+			double x = players.getDouble(playerName + ".returnLocation.x");
+			double y = players.getDouble(playerName + ".returnLocation.y");
+			double z = players.getDouble(playerName + ".returnLocation.z");
+			float yaw = (float)players.getDouble(playerName + ".returnLocation.yaw");
 			location = new Location(world, x, y, z);
 			location.setYaw(yaw);
 		}
 		return location;
+	}	
+	public GroundRect getPortalDestination(String worldName, Location location) {
+		String wpid=WildPortalPortal.getIDFromLocation(location);
+		return getPortalDestination(worldName, wpid);
+	}
+	public GroundRect getPortalDestination(String worldName, String wpid) {
+		GroundRect result=null; //new GroundRect(0, 0, 0, 0);
+		if ((wpid!=null) && portals.contains(worldName + "." + wpid + ".destination")) {
+			int x = portals.getInt(worldName + "." + wpid + ".destination.x");
+			int z = portals.getInt(worldName + "." + wpid + ".destination.z");
+			int width = portals.getInt(worldName + "." + wpid + ".destination.width");
+			int depth = portals.getInt(worldName + "." + wpid + ".destination.depth");
+			result = new GroundRect(x,z, width, depth);
+			result.yaw=(float)portals.getDouble(worldName + "." + wpid + ".destination.yaw");
+			result.key=portals.getString(worldName + "." + wpid + ".destination.keyword");
+			String destWorldName=portals.getString(worldName + "." + wpid + ".destination.world");
+			if (destWorldName==null) destWorldName="<this>";
+			if (destWorldName.equals("<this>")) destWorldName=worldName;
+			result.worldName=destWorldName;
+		}
+		else {
+			main.logWriteLine("getPortalDestination ERROR: no portal is at block " + worldName + "."+((wpid!=null)?wpid:"null"));
+		}
+		return result;
+	}
+	public Location getDestinationCenterIfPortalElseNull(World world, String wpid, Server server) {
+		Location result=null;
+		if (portals.contains(world.getName() + "." + wpid)) {
+			//result=WildPortalPortal.getLocationFromID(world, wpid);
+			GroundRect rect=getPortalDestination(world.getName(), wpid);
+			if (rect!=null) result=new Location(server.getWorld(rect.worldName), rect.getCenterX(), 64.0, rect.getCenterZ());
+		}
+		return result;
 	}
 	public ConfigurationSection getPortalSectionByID(String worldName, String wpid) {
 		ConfigurationSection result=null;
@@ -224,26 +291,5 @@ public class WildPortalData {
 			result = parent.getConfigurationSection(wpid);
 		}
 		return result;
-	}
-	public void setPlayerReturnLocation(String playerName, Location location) {
-		//NOTE: this is a cross-world configuration--player can only have one home on server.
-		players.set(playerName + "." + "returnLocation" + "." + "worldName", location.getWorld().getName());
-		players.set(playerName + "." + "returnLocation" + "." + "x", location.getX());
-		players.set(playerName + "." + "returnLocation" + "." + "y", location.getY());
-		players.set(playerName + "." + "returnLocation" + "." + "z", location.getZ());
-		players.set(playerName + "." + "returnLocation" + "." + "yaw", location.getYaw());
-		save();
-	}
-	public void save() {
-	    try {
-	    	players.save(playersFile);
-	    } catch (IOException e) {
-	        e.printStackTrace();
-	    }
-	    try {
-	    	portals.save(portalsFile);
-	    } catch (IOException e) {
-	        e.printStackTrace();
-	    }
 	}
 }
