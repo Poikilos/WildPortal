@@ -127,7 +127,7 @@ NOTE: planned features may never get done
 * Implement setting destination world by using command instead of editing csv
 * sethome automatically after teleport
 
-## Closed, won't fix
+## Closed Issues Considered Unecessary
 * set player's spawn point to the destination (is this possible? maybe with EssentialsSpawn; may not be possible, see [https://bukkit.org/threads/how-to-set-spawn.103950/](https://bukkit.org/threads/how-to-set-spawn.103950/))
 * Allow blocks from other mods to be inhabitable [http://hexxit.wikia.com/wiki/Category:Blocks](http://hexxit.wikia.com/wiki/Category:Blocks)
   NOTE: basically unfixable unless there are enums (static members of Material class) in MCPC+ for 1.5.2 which correspond to these blocks, since CB was forced to start using enums since Mojang was moving on from block IDs to compensate for running out of IDs.
