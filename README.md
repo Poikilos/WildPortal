@@ -1,5 +1,4 @@
 # WildPortal
-==========
 Mark a sign as a "WildPortal" to a random place in wild.
 Place in your enclosed, protected spawn then place a WildPortal in it!
 
