@@ -3,7 +3,7 @@ main: me.expertmm.WildPortal.main
 version: 1.5.2.2
 commands:
   wildportal:
-    description: Sends you to inhabitable land in the wild
+    description: WildPortals send you to inhabitable land in the wild. For more info type /wildportal help
     usage: "Usage: /wildportal return : return to source; /wildportal help : view management commands if you have permission to them"
 
 permissions:
