@@ -1,6 +1,7 @@
 <p align="center">
   <img src="https://github.com/expertmm/WildPortal/raw/master/wildportal-logo-square-small.png"/>
 </p>
+
 # WildPortal
 WildPortal lets you create signs on your server that, when clicked, randomly teleport players to their own personal safe block in the wild.
 
