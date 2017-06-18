@@ -3,6 +3,7 @@
 </p>
 
 # WildPortal
+by expertmm a.k.a. Abiyahh on bukkit.org
 WildPortal lets you create signs on your server that, when clicked, randomly teleport players to their own personal safe block in the wild.
 
 ## Unique features:
@@ -10,11 +11,12 @@ WildPortal lets you create signs on your server that, when clicked, randomly tel
 * Avoids blocks which would make the immediate area uninhabitable (avoids water, lava, etc).
 * Avoids unnatural blocks such as cobble, wood planks, and bricks
 * Data is saved whenever changes are made
-* If player has spawn permission and go back to spawn and click the sign again, they will be sent to the SAME personal spawn point that WildPortal generated (only in *.*.*.2+ versions).
+* If player has spawn permission and go back to spawn and click the sign again, they will be sent to the SAME personal wild destination that WildPortal generated (only in *.*.*.2+ versions).
+* The wild destination ("return" location) can be cleared for a specific player by op or moderator with wildportal.manage permission--after that, the player can click a wildportal for new newly-generated wild destination.
 
 ## Currently has binaries for:
 * Hexxit via MCPC+
-* Tekkit Classic via CraftBukkit for 1.2.5 (version *.*.*.1 only--current code uses Materials enum for blocks and may not work with Tekkit Classic)
+* Tekkit Classic via MCPC+ (version *.*.*.1 only--current code uses Materials enum for blocks and may not work with 1.2.5 such as Tekkit Classic)
 
 ## Recommended use:
 * give players spawn or wildportal.return permission by default
