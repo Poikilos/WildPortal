@@ -5,6 +5,7 @@
 # WildPortal
 by expertmm a.k.a. Abiyahh on bukkit.org\
 see also [https://dev.bukkit.org/members/Abiyahh](https://dev.bukkit.org/members/Abiyahh)
+
 WildPortal lets you create signs on your server that, when clicked, randomly teleport players to their own personal safe block in the wild.
 
 ## Unique features:
